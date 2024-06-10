@@ -1,42 +1,38 @@
 import React from "react";
 import axios from "axios";
+import { useEffect } from "react";
+import { useState } from "react";
 
 import "./App.css";
 
-class App extends React.Component {
-  state = { advice: " " };
+function App() {
+  const [quote, setQuote] = useState(null);
 
-  componentDidMount() {
-    this.fetchQuote();
-  }
-
-  fetchQuote = () => {
-    // No need const as it is a function inside a class, which makes it a method that belongs to the class
+  const fetchQuote = () =>
     axios
       .get("https://api.tronalddump.io/random/quote")
       .then((response) => {
-        const { value } = response.data; // This line extracts the value property from the response data object. The response data is assumed to be in JSON format, and it seems to contain the value property.
-        this.setState({ advice: value }); // Sets the value of the 'advice' property in the component's state to the value of the 'value' property received from the API response
-      })
+        setQuote(response.data.value);
+      }) // .then() block to handle the response from the GET request. .value to extract the value property of the data object
       .catch((error) => {
         console.log(error);
       });
-  };
-  render() {
-    const { advice } = this.state;
 
-    return (
-      <div className="app">
-        <div className="card">
-          <h1 className="intro">Dumbest tweets Donald Trump has ever made.</h1>
-          <h2 className="heading">{advice}</h2>
-          <button className="button" onClick={this.fetchQuote}>
-            <span>MAKE AMERICA GREAT AGAIN!</span>
-          </button>
-        </div>
+  useEffect(() => {
+    fetchQuote();
+  }, []);
+
+  return (
+    <div className="app">
+      <div className="card">
+        <h1 className="intro">Dumbest tweets Donald Trump has ever made.</h1>
+        <h2 className="heading">{quote}</h2>
+        <button className="button" onClick={fetchQuote}>
+          <span>MAKE AMERICA GREAT AGAIN!</span>
+        </button>
       </div>
-    );
-  }
+    </div>
+  );
 }
 
 export default App;
